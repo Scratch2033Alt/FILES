@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyJS Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: #3498db;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e7eb;
+            padding-bottom: 8px;
+        }
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #34495e;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        code {
+            background-color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #c0392b; /* Highlight code snippets */
+        }
+        pre {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+            color: inherit;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #664d03;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #721c24;
+            font-weight: bold;
+        }
+        .example-output {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e0;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        /* Styling for <py> tags in the documentation itself */
+        py {
+            display: block;
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 50px;
+            overflow-x: auto;
+            border: 1px dashed #ccc;
+            color: #555;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PyJS Documentation</h1>
+
+        <div class="note">
+            <p><strong>Note:</strong> This documentation assumes you have the PyJS backend service (`apps/python_api_service/index.py`) and the `python.js` frontend library properly set up and running on your server.</p>
+        </div>
+
+        <h2>Introduction to PyJS</h2>
+        <p>PyJS is a powerful system that bridges the gap between Python backend execution and frontend JavaScript. It allows you to run Python code directly from your HTML and JavaScript, making it possible to execute server-side logic in a seemingly client-side manner, manage Python worker sessions, and dynamically load external JavaScript libraries.</p>
+        <p>This system leverages a Flask backend API (<code>/python_api_service</code>) for Python execution and a lightweight JavaScript library (<code>python.js</code>) for seamless frontend interaction.</p>
+
+        <h2>Getting Started</h2>
+        <p>To use PyJS in your HTML page, simply include the <code>python.js</code> script in your HTML <code>&lt;head&gt;</code> or before your closing <code>&lt;/body&gt;</code> tag:</p>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My PyJS App&lt;/title&gt;
+    &lt;!-- Tailwind CSS for styling (optional) --&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- Your HTML content --&gt;
+
+    &lt;!-- Include the PyJS library --&gt;
+    &lt;script src="python.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+        // Your JavaScript code can now use the 'Python' object
+        // and 'loadScript' function
+        async function initPyJS() {
+            // Optional: Register a worker on page load
+            await Python.Register();
+            console.log("PyJS worker ready!");
+
+            // Optional: Process all <py> tags on the page
+            await Python.ProcessHTML();
+        }
+        initPyJS(); // Call the initialization function
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h2>The <code>Python</code> JavaScript Object API</h2>
+        <p>The <code>python.js</code> library exposes a global <code>Python</code> object with several asynchronous methods to interact with the backend Python API.</p>
+
+        <h3><code>Python.Register()</code></h3>
+        <p>Registers a new Python worker session on the backend. This creates an isolated in-memory environment for your Python code execution and stores a unique worker ID in the database.</p>
+        <ul>
+            <li><strong>Returns:</strong> A Promise that resolves with the <code>worker_id</code> (string) if successful.</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function registerNewWorker() {
+    try {
+        const workerId = await Python.Register();
+        console.log('New worker registered with ID:', workerId);
+        // Store workerId or update UI
+    } catch (error) {
+        console.error('Failed to register worker:', error);
+    }
+}
+registerNewWorker();</code></pre>
+
+        <h3><code>Python.Run(code, [workerId])</code></h3>
+        <p>Executes Python code within the specified worker's interpreter session. If no <code>workerId</code> is provided, it uses the <code>Python.workerId</code> property (the last registered worker).</p>
+        <div class="warning">
+            <p><strong>Security Warning:</strong> The backend uses <code>exec()</code> to run the provided Python code. This is <strong>highly insecure</strong> for untrusted user input as it allows arbitrary code execution on the server. For production environments, robust sandboxing (e.g., Docker containers, secure execution environments) is absolutely critical.</p>
+        </div>
+        <ul>
+            <li><strong>Parameters:</strong>
+                <ul>
+                    <li><code>code</code> (string): The Python code to execute.</li>
+                    <li><code>workerId</code> (string, optional): The ID of the worker to run the code on.</li>
+                </ul>
+            </li>
+            <li><strong>Returns:</strong> A Promise that resolves with the output (string) of the code execution.</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function runPythonCode() {
+    const myCode = `
+import math
+print("The value of pi is:", math.pi)
+a = 10
+b = 20
+print(f"Sum: {a + b}")
+`;
+    try {
+        const output = await Python.Run(myCode);
+        console.log('Python Code Output:', output);
+    } catch (error) {
+        console.error('Error running Python code:', error);
+    }
+}
+runPythonCode();</code></pre>
+
+        <h3><code>Python.Output([workerId])</code></h3>
+        <p>Retrieves the full accumulated output (stdout/stderr) from the worker's interpreter session since its registration or last reset. If no <code>workerId</code> is provided, it uses the <code>Python.workerId</code> property.</p>
+        <ul>
+            <li><strong>Parameters:</strong>
+                <ul>
+                    <li><code>workerId</code> (string, optional): The ID of the worker.</li>
+                </ul>
+            </li>
+            <li><strong>Returns:</strong> A Promise that resolves with the accumulated output (string).</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function getFullOutput() {
+    try {
+        const fullOutput = await Python.Output();
+        console.log('Full Worker Output:', fullOutput);
+    } catch (error) {
+        console.error('Error getting full output:', error);
+    }
+}
+getFullOutput();</code></pre>
+
+        <h3><code>Python.OutputLastCode([workerId])</code></h3>
+        <p>Retrieves only the output from the most recent <code>Python.Run()</code> call for the specified worker. If no <code>workerId</code> is provided, it uses the <code>Python.workerId</code> property.</p>
+        <ul>
+            <li><strong>Parameters:</strong>
+                <ul>
+                    <li><code>workerId</code> (string, optional): The ID of the worker.</li>
+                </ul>
+            </li>
+            <li><strong>Returns:</strong> A Promise that resolves with the last code execution's output (string).</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function getLastOutput() {
+    try {
+        const lastOutput = await Python.OutputLastCode();
+        console.log('Last Code Output:', lastOutput);
+    } catch (error) {
+        console.error('Error getting last output:', error);
+    }
+}
+getLastOutput();</code></pre>
+
+        <h3><code>Python.Require(modulename, [workerId])</code></h3>
+        <p>Conceptually installs a Python package (via pip) into the worker's environment. In the current demo backend, this is a placeholder and does not perform actual installation. For a real system, this would involve running pip within the worker's isolated environment.</p>
+        <ul>
+            <li><strong>Parameters:</strong>
+                <ul>
+                    <li><code>modulename</code> (string): The name of the Python module to install (e.g., 'requests').</li>
+                    <li><code>workerId</code> (string, optional): The ID of the worker.</li>
+                </ul>
+            </li>
+            <li><strong>Returns:</strong> A Promise that resolves with a status message (string).</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function installPackage() {
+    try {
+        const message = await Python.Require('numpy');
+        console.log(message);
+    } catch (error) {
+        console.error('Error requiring module:', error);
+    }
+}
+installPackage();</code></pre>
+
+        <h3><code>Python.Quit([workerId])</code></h3>
+        <p>Terminates the specified worker's Python interpreter session, removes its in-memory state, and deletes its entry from the MySQL database. If no <code>workerId</code> is provided, it uses the <code>Python.workerId</code> property.</p>
+        <p>Workers are also automatically quit after 30 seconds of inactivity (no API calls to that worker).</p>
+        <ul>
+            <li><strong>Parameters:</strong>
+                <ul>
+                    <li><code>workerId</code> (string, optional): The ID of the worker to quit.</li>
+                </ul>
+            </li>
+            <li><strong>Returns:</strong> A Promise that resolves with a status message (string).</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function quitCurrentWorker() {
+    try {
+        const message = await Python.Quit();
+        console.log(message);
+        // Clear worker ID from UI
+    } catch (error) {
+        console.error('Error quitting worker:', error);
+    }
+}
+quitCurrentWorker();</code></pre>
+
+        <h3><code>Python.ProcessHTML()</code></h3>
+        <p>Scans the entire HTML document for custom <code>&lt;py&gt;</code> tags. For each tag found, it extracts the Python code, automatically corrects its indentation, sends it to the backend for execution, and replaces the content of the <code>&lt;py&gt;</code> tag with the Python's output or an error message.</p>
+        <p>If no worker is currently registered (i.e., <code>Python.workerId</code> is null), it will automatically call <code>Python.Register()</code> first.</p>
+        <ul>
+            <li><strong>Returns:</strong> A Promise that resolves when all <code>&lt;py&gt;</code> tags have been processed.</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>// Typically called on page load after the DOM is ready
+document.addEventListener('DOMContentLoaded', async () => {
+    await Python.ProcessHTML();
+});</code></pre>
+
+        <h2>Using the <code>&lt;py&gt;</code> Tag</h2>
+        <p>The <code>&lt;py&gt;</code> tag allows you to embed Python code directly within your HTML. The <code>Python.ProcessHTML()</code> function will find these tags, execute their content, and display the output in place.</p>
+        <p>The system automatically handles common indentation issues for embedded Python code, so you can indent your Python code within the HTML for readability without causing <code>IndentationError</code>.</p>
+        <ul>
+            <li><strong>Example:</strong></li>
+        </ul>
+        <pre><code>&lt;py&gt;
+    # This is Python code embedded in HTML
+    name = "World"
+    print(f"Hello, {name} from PyJS!")
+    for i in range(3):
+        print(f"Iteration {i+1}")
+&lt;/py&gt;</code></pre>
+        <p>After <code>Python.ProcessHTML()</code> runs, the above tag's content might be replaced with:</p>
+        <div class="example-output">
+            Hello, World from PyJS!<br>
+            Iteration 1<br>
+            Iteration 2<br>
+            Iteration 3
+        </div>
+
+        <h2>Dynamic Script Loading (<code>loadScript</code>)</h2>
+        <p>The <code>python.js</code> file also provides a utility function <code>loadScript(url)</code> that allows you to dynamically load external JavaScript files into your page. This is useful for loading third-party libraries on demand.</p>
+        <ul>
+            <li><strong>Parameters:</strong>
+                <ul>
+                    <li><code>url</code> (string): The URL of the JavaScript file to load.</li>
+                </ul>
+            </li>
+            <li><strong>Returns:</strong> A Promise that resolves when the script is loaded, or rejects on error.</li>
+            <li><strong>Usage:</strong></li>
+        </ul>
+        <pre><code>async function loadJQuery() {
+    try {
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js');
+        console.log('jQuery loaded!');
+        // You can now use jQuery, e.g., $('body').append('&lt;p&gt;jQuery added this!&lt;/p&gt;');
+    } catch (error) {
+        console.error('Failed to load jQuery:', error);
+    }
+}
+loadJQuery();</code></pre>
+
+        <h2>Conclusion</h2>
+        <p>PyJS offers a flexible way to integrate Python execution into your web applications. By understanding the <code>Python</code> object's API and the convenience of the <code>&lt;py&gt;</code> tag, you can build dynamic web experiences powered by Python.</p>
+        <p>Remember to always prioritize security, especially when dealing with code execution from user input in a production environment.</p>
+    </div>
+</body>
+</html>
