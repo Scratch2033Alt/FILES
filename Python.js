@@ -1,7 +1,4 @@
-// apps/python_api_demo/python.js
 
-// IMPORTANT: The API_BASE_URL now points to the new service's mount point
-const API_BASE_URL = 'https://Scratch2033.pythonanywhere.com/python-api';
 
 // --- Python JS Object Implementation ---
 const Python = {
@@ -142,6 +139,7 @@ const Python = {
             throw error;
         }
     },
+    async SetBaseURL(url) { const API_BASE_URL = url }
 
     /**
      * Processes all <py> tags found in the HTML document.
